@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Predicción de Clientes Internautas</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- AOS (Animate On Scroll) para animaciones -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0078D7;
+            --primary-dark: #005a9e;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --info: #17a2b8;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #333;
+            background-color: #f9f9f9;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 3rem 0;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .highlight-box {
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .highlight-primary {
+            background-color: rgba(0, 120, 215, 0.1);
+            border-left: 5px solid var(--primary);
+        }
+        
+        .highlight-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            border-left: 5px solid var(--success);
+        }
+        
+        .highlight-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            border-left: 5px solid var(--warning);
+        }
+        
+        .highlight-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-left: 5px solid var(--danger);
+        }
+        
+        .img-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .img-container img {
+            width: 100%;
+            transition: transform 0.5s ease;
+        }
+        
+        .img-container:hover img {
+            transform: scale(1.02);
+        }
+        
+        .img-caption {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .img-container:hover .img-caption {
+            transform: translateY(0);
+        }
+        
+        .conclusion-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .conclusion-section h2, .conclusion-section h3 {
+            color: white;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 0.5rem;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card .stat-label {
+            font-size: 1rem;
+            color: var(--secondary);
+            text-transform: uppercase;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .table-custom {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .table-custom thead {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .progress-bar-custom {
+            height: 10px;
+            border-radius: 5px;
+        }
+        
+        .footer-section {
+            background-color: var(--dark);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-radius: 20px 20px 0 0;
+        }
+        
+        /* Animaciones para elementos */
+        .fade-in {
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+        }
+        
+        /* Estilos para dispositivos móviles */
+        @media (max-width: 768px) {
+            .header-section {
+                padding: 2rem 0;
+            }
+            
+            .section-card {
+                padding: 1.5rem;
+            }
+            
+            .stat-card .stat-value {
+                font-size: 2rem;
+            }
+        }
+
+        /* Estilos para las imágenes clickeables */
+        .img-container img {
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.5s ease, opacity 0.3s ease;
+        }
+
+        .img-container img:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        /* Estilos para el modal de imágenes */
+        .modal-img {
+            max-height: 90vh;
+            max-width: 100%;
+        }
+
+        .modal-fullscreen .modal-content {
+            background-color: rgba(0, 0, 0, 0.9);
+            border: none;
+        }
+
+        .modal-fullscreen .modal-header {
+            border-bottom: none;
+        }
+
+        .modal-fullscreen .btn-close {
+            color: white;
+            background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header-section mb-5">
+        <div class="container text-center" data-aos="fade-down">
+            <img src="https://www.duoc.cl/wp-content/themes/wordpress-duoc-cl/images/logo-duoc.svg" alt="Logo Duoc UC" class="img-fluid mb-4" style="max-width: 200px;">
+            <h1 class="display-4 fw-bold" style="color: transparent; background: linear-gradient(to right, cyan, lightgreen); -webkit-background-clip: text;">Análisis de Predicción de Clientes Internautas</h1>
+            <p class="lead">Proyecto de Deep Learning</p>
+            <div class="mt-3">
+                <span class="badge bg-light text-dark me-2">Patricio Quintanilla</span>
+                <span class="badge bg-light text-dark me-2">Italo Brignardello</span>
+                <span class="badge bg-light text-dark">Alexander Seydewitz</span>
+            </div>
+            <p class="mt-3"><i class="far fa-calendar-alt me-2"></i>Fecha: 08-04-2025</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Introducción -->
+        <section class="section-card" data-aos="fade-up">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="mb-4"><i class="fas fa-chart-line me-2"></i>1. Introducción</h2>
+                    <p>Este proyecto implementa una Red Neuronal Artificial (MLP) para predecir si un cliente bancario utilizará servicios bancarios online (si será "Internauta"). El análisis se basa en características demográficas y financieras de los clientes, con el objetivo de identificar patrones y factores determinantes que influyen en la adopción de servicios digitales.</p>
+                    
+                    <div class="highlight-box highlight-primary">
+                        <h3><i class="fas fa-bullseye me-2"></i>Objetivos del Proyecto</h3>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent"><i class="fas fa-check-circle text-primary me-2"></i>Desarrollar un modelo predictivo preciso para identificar potenciales usuarios de servicios bancarios online</li>
+                            <li class="list-group-item bg-transparent"><i class="fas fa-check-circle text-primary me-2"></i>Identificar los factores clave que influyen en la adopción de servicios digitales</li>
+                            <li class="list-group-item bg-transparent"><i class="fas fa-check-circle text-primary me-2"></i>Proporcionar recomendaciones estratégicas para aumentar la digitalización de clientes</li>
+                        </ul>
+                    </div>
+                    
+                    <p>La capacidad de predecir qué clientes tienen mayor probabilidad de utilizar servicios bancarios online permite a las instituciones financieras optimizar sus estrategias de marketing digital, mejorar la experiencia del usuario y reducir costos operativos asociados a canales tradicionales.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Análisis Exploratorio de Datos -->
+        <section class="section-card" data-aos="fade-up">
+            <h2 class="mb-4"><i class="fas fa-search me-2"></i>2. Análisis Exploratorio de Datos</h2>
+            <p>Antes de construir nuestro modelo predictivo, realizamos un análisis exploratorio para comprender la estructura de los datos y las relaciones entre variables.</p>
+            
+            <h3 class="mt-4"><i class="fas fa-chart-bar me-2"></i>2.1 Distribución de la Variable Objetivo</h3>
+            <div class="img-container" data-aos="zoom-in">
+                <img src="distribucion_internauta.png" alt="Distribución de la variable objetivo" class="img-fluid">
+                <div class="img-caption">Distribución de clientes internautas vs. no internautas</div>
+            </div>
+            <p>El gráfico muestra la distribución de la variable objetivo "Internauta". Observamos un desbalance en los datos, con una mayor proporción de clientes que no utilizan servicios bancarios online. Este desbalance deberá ser considerado durante el entrenamiento del modelo.</p>
+            
+            <h3 class="mt-4"><i class="fas fa-chart-line me-2"></i>2.2 Relación entre Variables Numéricas y Variable Objetivo</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="img-container" data-aos="zoom-in">
+                        <img src="relacion_Edad_internauta.png" alt="Relación entre Edad e Internauta" class="img-fluid">
+                        <div class="img-caption">Relación entre Edad y condición de Internauta</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="img-container" data-aos="zoom-in">
+                        <img src="relacion_Renta_internauta.png" alt="Relación entre Renta e Internauta" class="img-fluid">
+                        <div class="img-caption">Relación entre Renta y condición de Internauta</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="highlight-box highlight-warning mt-4">
+                <h4><i class="fas fa-exclamation-triangle me-2"></i>Hallazgo Importante</h4>
+                <p>Se observa una clara relación entre la edad y la condición de internauta: los clientes más jóvenes tienen mayor probabilidad de utilizar servicios bancarios online. Esta tendencia es consistente con patrones generacionales de adopción tecnológica.</p>
+            </div>
+            
+            <h3 class="mt-4"><i class="fas fa-table me-2"></i>2.3 Matriz de Correlación</h3>
+            <div class="img-container" data-aos="zoom-in">
+                <img src="matriz_correlacion.png" alt="Matriz de Correlación" class="img-fluid">
+                <div class="img-caption">Matriz de correlación entre variables numéricas</div>
+            </div>
+            <p>La matriz de correlación revela una correlación negativa significativa (-0.389) entre la edad y la condición de internauta, confirmando que los clientes más jóvenes tienden a utilizar más los servicios online. También se observa una correlación positiva entre la edad y la antigüedad como cliente (0.524), lo cual es lógico.</p>
+        </section>
+
+        <!-- Preprocesamiento de Datos -->
+        <section class="section-card" data-aos="fade-up">
+            <h2 class="mb-4"><i class="fas fa-cogs me-2"></i>3. Preprocesamiento de Datos</h2>
+            <p>Para preparar los datos para el entrenamiento del modelo, realizamos varias transformaciones:</p>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3 class="card-title"><i class="fas fa-database me-2"></i>3.1 Variables Seleccionadas</h3>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><strong><i class="fas fa-money-bill-wave me-2 text-success"></i>Variables Numéricas:</strong> Renta, Edad, Antigüedad</li>
+                                <li class="list-group-item"><strong><i class="fas fa-tags me-2 text-primary"></i>Variables Categóricas:</strong> Región, Sexo</li>
+                                <li class="list-group-item"><strong><i class="fas fa-bullseye me-2 text-danger"></i>Variable Objetivo:</strong> Internauta (binaria: 0/1)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3 class="card-title"><i class="fas fa-magic me-2"></i>3.2 Transformaciones Aplicadas</h3>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><i class="fas fa-balance-scale me-2 text-primary"></i>Estandarización de variables numéricas (media 0, desviación estándar 1)</li>
+                                <li class="list-group-item"><i class="fas fa-code-branch me-2 text-success"></i>Codificación One-Hot para variables categóricas</li>
+                                <li class="list-group-item"><i class="fas fa-cut me-2 text-warning"></i>División de datos: 70% entrenamiento, 15% validación, 15% prueba</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="highlight-box highlight-primary mt-4">
+                <h4><i class="fas fa-info-circle me-2"></i>Importancia del Preprocesamiento</h4>
+                <p>La estandarización de variables numéricas es crucial para el entrenamiento eficiente de redes neuronales, ya que ayuda a que el algoritmo de optimización converja más rápidamente. La codificación One-Hot permite que el modelo interprete correctamente las variables categóricas sin imponer una relación ordinal artificial.</p>
+            </div>
+        </section>
+
+        <!-- Implementación del Modelo -->
+        <section class="section-card" data-aos="fade-up">
+            <h2 class="mb-4"><i class="fas fa-brain me-2"></i>4. Implementación del Modelo</h2>
+            <p>Implementamos una Red Neuronal Artificial (MLP) utilizando PyTorch, con capacidad para personalizar la arquitectura, funciones de activación y técnicas de regularización.</p>
+            
+            <h3 class="mt-4"><i class="fas fa-network-wired me-2"></i>4.1 Arquitectura del Modelo</h3>
+            <div class="card bg-light mb-4">
+                <div class="card-body">
+                    <pre class="mb-0" style="background-color: transparent; border: none;">
+MLP(
+  (model): Sequential(
+    (0): Linear(in_features=17, out_features=32, bias=True)
+    (1): ReLU()
+    (2): Dropout(p=0.2, inplace=False)
+    (3): Linear(in_features=32, out_features=16, bias=True)
+    (4): ReLU()
+    (5): Dropout(p=0.2, inplace=False)
+    (6): Linear(in_features=16, out_features=8, bias=True)
+    (7): ReLU()
+    (8): Dropout(p=0.2, inplace=False)
+    (9): Linear(in_features=8, out_features=1, bias=True)
+    (10): Sigmoid()
+  )
+)
+                    </pre>
+                </div>
+            </div>
+            
+            <h3 class="mt-4"><i class="fas fa-flask me-2"></i>4.2 Experimentación con Diferentes Configuraciones</h3>
+            <p>Probamos cinco configuraciones diferentes para encontrar la arquitectura óptima:</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-layer-group me-2 text-primary"></i>Modelo Simple</h5>
+                            <p class="card-text">Arquitectura básica de 2 capas sin regularización</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-random me-2 text-success"></i>Modelo con Dropout</h5>
+                            <p class="card-text">3 capas con dropout para prevenir sobreajuste</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-balance-scale me-2 text-warning"></i>Modelo con Regularización L2</h5>
+                            <p class="card-text">3 capas con regularización L2</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-wave-square me-2 text-info"></i>Modelo con Tanh</h5>
+                            <p class="card-text">3 capas con función de activación tanh</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-project-diagram me-2 text-danger"></i>Modelo Profundo</h5>
+                            <p class="card-text">5 capas con dropout y regularización L2</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="img-container mt-4" data-aos="zoom-in">
+                <img src="comparacion_metricas.png" alt="Comparación de métricas entre modelos" class="img-fluid">
+                <div class="img-caption">Comparación de métricas de rendimiento entre diferentes configuraciones de modelos</div>
+            </div>
+            
+            <div class="highlight-box highlight-success mt-4">
+                <h4><i class="fas fa-trophy me-2"></i>Resultado de la Experimentación</h4>
+                <p>El "Modelo con Dropout" mostró el mejor rendimiento general, con un F1-score de 0.8341 y una exactitud de 0.7453. Este modelo logra un buen equilibrio entre precisión y recall, siendo especialmente efectivo en la detección de la clase positiva (internautas).</p>
+            </div>
+        </section>
+
+        <!-- Análisis de Funciones de Activación -->
+        <section class="section-card" data-aos="fade-up">
+            <h2 class="mb-4"><i class="fas fa-bolt me-2"></i>5. Análisis de Funciones de Activación</h2>
+            <p>Realizamos un experimento adicional para comparar el rendimiento de diferentes funciones de activación: ReLU, Tanh, Sigmoid, ELU y SELU.</p>
+            
+            <div class="img-container" data-aos="zoom-in">
+                <img src="comparacion_activaciones.png" alt="Comparación de funciones de activación" class="img-fluid">
+                <div class="img-caption">Comparación de métricas entre diferentes funciones de activación</div>
+            </div>
+            
+            <div class="highlight-box highlight-primary mt-4">
+                <h4><i class="fas fa-lightbulb me-2"></i>Hallazgos sobre Funciones de Activación</h4>
+                <p>La función de activación ELU (Exponential Linear Unit) obtuvo el mejor F1-score (0.8322) y la mejor exactitud (0.7442). Esta función combina las ventajas de ReLU (rápida convergencia) con una transición suave para valores negativos, lo que ayuda a mitigar el problema de "neuronas muertas".</p>
+            </div>
+            
+            <p>La función Sigmoid mostró un comportamiento patológico, clasificando todos los ejemplos como positivos, lo que resultó en un AUC-ROC de 0.5 (equivalente a una predicción aleatoria). Esto confirma que Sigmoid no es adecuada para capas ocultas en este problema.</p>
+        </section>
+
+        <!-- Efecto del Tamaño de Batch -->
+        <section class="section-card" data-aos="fade-up">
+            <h2 class="mb-4"><i class="fas fa-layer-group me-2"></i>6. Efecto del Tamaño de Batch</h2>
+            <p>Analizamos cómo el tamaño de batch afecta tanto el rendimiento del modelo como el tiempo de entrenamiento, probando tamaños de 16, 32, 64, 128 y 256.</p>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="img-container" data-aos="zoom-in">
+                        <img src="comparacion_batch_sizes.png" alt="Comparación de tamaños de batch" class="img-fluid">
+                        <div class="img-caption">Comparación de métricas por tamaño de batch</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="img-container" data-aos="zoom-in">
+                        <img src="tiempos_batch_sizes.png" alt="Tiempos de entrenamiento por tamaño de batch" class="img-fluid">
+                        <div class="img-caption">Tiempo de entrenamiento por tamaño de batch</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="highlight-box highlight-success mt-4">
+                <h4><i class="fas fa-balance-scale me-2"></i>Tamaño de Batch Óptimo</h4>
+                <p>El tamaño de batch 128 ofrece el mejor equilibrio entre rendimiento predictivo (F1-score de 0.8308) y eficiencia computacional. Los tamaños más pequeños (16, 32) aumentan significativamente el tiempo de entrenamiento sin mejorar el rendimiento, mientras que el tamaño 256 reduce el tiempo pero con una ligera disminución en las métricas.</p>
+            </div>
+        </section>
+
+        <!-- Análisis de Importancia de Características -->
+        <section class="section-card" data-aos="fade-up">
+            <h2 class="mb-4"><i class="fas fa-search-plus me-2"></i>7. Análisis de Importancia de Características</h2>
+            <p>Utilizamos dos métodos para determinar la importancia de las características: análisis de pesos de la primera capa y análisis de permutación.</p>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="img-container" data-aos="zoom-in">
+                        <img src="importancia_caracteristicas.png" alt="Importancia de características" class="img-fluid">
+                        <div class="img-caption">Importancia de características basada en pesos de la primera capa</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="img-container" data-aos="zoom-in">
+                        <img src="importancia_caracteristicas_permutacion.png" alt="Importancia de características por permutación" class="img-fluid">
+                        <div class="img-caption">Importancia de características mediante análisis de permutación</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="highlight-box highlight-warning mt-4">
+                <h4><i class="fas fa-star me-2"></i>Factor Determinante: Edad</h4>
+                <p>Ambos métodos confirman que la edad es, por un amplio margen, la característica más importante para predecir si un cliente será internauta. En el análisis de permutación, la edad tiene una importancia 42 veces mayor que la segunda característica más importante (Renta).</p>
+            </div>
+            
+            <p>La renta tiene una importancia moderada pero significativamente menor que la edad. Algunas regiones muestran una pequeña influencia en la predicción, mientras que la antigüedad como cliente tiene un impacto muy limitado.</p>
+        </section>
+
+        <!-- Análisis de Sensibilidad -->
+        <section class="section-card" data-aos="fade-up">
+            <h2 class="mb-4"><i class="fas fa-sliders-h me-2"></i>8. Análisis de Sensibilidad</h2>
+            <p>Realizamos un análisis de sensibilidad para entender cómo cambia la probabilidad de ser internauta al variar cada variable numérica, manteniendo las demás constantes.</p>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="img-container" data-aos="zoom-in">
+                        <img src="analisis_sensibilidad_Edad.png" alt="Análisis de sensibilidad para Edad" class="img-fluid">
+                        <div class="img-caption">Análisis de sensibilidad para la variable Edad</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="img-container" data-aos="zoom-in">
+                        <img src="analisis_sensibilidad_Renta.png" alt="Análisis de sensibilidad para Renta" class="img-fluid">
+                        <div class="img-caption">Análisis de sensibilidad para la variable Renta</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="highlight-box highlight-primary mt-4">
+                <h4><i class="fas fa-chart-line me-2"></i>Relaciones Graduales</h4>
+                <p>No se identificaron puntos de inflexión claros para ninguna de las variables numéricas. Esto sugiere que las relaciones entre estas variables y la probabilidad de ser internauta son graduales o lineales, en lugar de presentar umbrales críticos.</p>
+            </div>
+        </section>
+
+        <!-- Predicciones para Diferentes Perfiles -->
+        <section class="section-card" data-aos="fade-up">
+            <h2 class="mb-4"><i class="fas fa-user-check me-2"></i>9. Predicciones para Diferentes Perfiles</h2>
+            <p>Aplicamos el modelo a diferentes perfiles de clientes para ilustrar su capacidad predictiva y entender mejor los patrones identificados.</p>
+            
+            <div class="img-container" data-aos="zoom-in">
+                <img src="predicciones_ejemplo.png" alt="Predicciones para diferentes perfiles" class="img-fluid">
+                <div class="img-caption">Predicciones del modelo para diferentes perfiles de clientes</div>
+            </div>
+            
+            <div class="img-container mt-4" data-aos="zoom-in">
+                <img src="probabilidad_por_edad_renta.png" alt="Probabilidad por edad y renta" class="img-fluid">
+                <div class="img-caption">Probabilidad de ser internauta por categoría de edad y renta</div>
+            </div>
+            
+            <div class="highlight-box highlight-success mt-4">
+                <h4><i class="fas fa-check-circle me-2"></i>Patrones Identificados</h4>
+                <p>Se confirma que la edad es el factor más determinante: los clientes jóvenes (25-30 años) tienen alta probabilidad de ser internautas (>0.80), mientras que los seniors (65-70 años) tienen baja probabilidad (&lt;0.50). Para edades similares, la renta tiene un efecto moderado.</p>
+            </div>
+            
+            <p>Un hallazgo interesante es que la renta alta no garantiza ser internauta si la edad es avanzada. El cliente senior con renta alta sigue siendo clasificado como no internauta, lo que refuerza la importancia dominante de la edad.</p>
+        </section>
+
+        <!-- Aplicación Práctica -->
+        <section class="section-card" data-aos="fade-up">
+            <h2 class="mb-4"><i class="fas fa-laptop-code me-2"></i>10. Aplicación Práctica</h2>
+            <p>Implementamos una función de predicción que permite aplicar el modelo a nuevos datos de clientes, facilitando su uso en entornos reales.</p>
+            
+            <h3 class="mt-4"><i class="fas fa-users me-2"></i>Ejemplos de Predicción</h3>
+            <div class="table-responsive">
+                <table class="table table-hover table-custom">
+                    <thead>
+                        <tr>
+                            <th>Perfil</th>
+                            <th>Edad</th>
+                            <th>Renta</th>
+                            <th>Antigüedad</th>
+                            <th>Región</th>
+                            <th>Sexo</th>
+                            <th>Predicción</th>
+                            <th>Probabilidad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cliente de mediana edad</td>
+                            <td>45</td>
+                            <td>567,012</td>
+                            <td>5</td>
+                            <td>13</td>
+                            <td>M</td>
+                            <td><span class="badge bg-success">Es Internauta</span></td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success progress-bar-custom" role="progressbar" style="width: 63.73%" aria-valuenow="63.73" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <small>63.73%</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Cliente joven</td>
+                            <td>35</td>
+                            <td>567,012</td>
+                            <td>5</td>
+                            <td>13</td>
+                            <td>M</td>
+                            <td><span class="badge bg-success">Es Internauta</span></td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success progress-bar-custom" role="progressbar" style="width: 77.90%" aria-valuenow="77.90" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <small>77.90%</small>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="highlight-box highlight-primary mt-4">
+                <h4><i class="fas fa-chart-pie me-2"></i>Impacto de la Edad</h4>
+                <p>Se observa que la edad tiene un impacto significativo en la probabilidad de ser internauta. El cliente más joven (35 años) tiene una probabilidad 14.17% mayor de ser internauta que el cliente de 45 años, manteniendo todas las demás variables constantes.</p>
+            </div>
+            
+            <p>Esta función de predicción puede integrarse en sistemas CRM existentes para segmentar clientes, personalizar comunicaciones y optimizar estrategias de marketing digital.</p>
+        </section>
+
+        <!-- Conclusiones y Recomendaciones -->
+        <section class="conclusion-section" data-aos="fade-up">
+            <h2 class="mb-4"><i class="fas fa-flag-checkered me-2"></i>Conclusiones y Recomendaciones</h2>
+            
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card">
+                        <i class="fas fa-chart-line feature-icon"></i>
+                        <div class="stat-value">0.8322</div>
+                        <div class="stat-label">F1-Score</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card">
+                        <i class="fas fa-bullseye feature-icon"></i>
+                        <div class="stat-value">0.7442</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card">
+                        <i class="fas fa-balance-scale feature-icon"></i>
+                        <div class="stat-value">0.7400</div>
+                        <div class="stat-label">AUC-ROC</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="mt-4"><i class="fas fa-gem me-2"></i>Hallazgos Principales</h3>
+            <ul class="list-group list-group-flush mb-4">
+                <li class="list-group-item bg-transparent text-white"><i class="fas fa-check me-2"></i>La edad es el factor más determinante para predecir si un cliente utilizará servicios bancarios online</li>
+                <li class="list-group-item bg-transparent text-white"><i class="fas fa-check me-2"></i>Existe una relación inversa clara: a menor edad, mayor probabilidad de ser internauta</li>
+                <li class="list-group-item bg-transparent text-white"><i class="fas fa-check me-2"></i>La renta tiene una influencia moderada, mientras que la antigüedad como cliente y la región tienen impacto mínimo</li>
+                <li class="list-group-item bg-transparent text-white"><i class="fas fa-check me-2"></i>El modelo con dropout y función de activación ELU mostró el mejor rendimiento, con un F1-score de 0.8322</li>
+                <li class="list-group-item bg-transparent text-white"><i class="fas fa-check me-2"></i>El tamaño de batch óptimo (128) ofrece el mejor equilibrio entre rendimiento y eficiencia computacional</li>
+            </ul>
+            
+            <h3 class="mt-4"><i class="fas fa-lightbulb me-2"></i>Recomendaciones Estratégicas</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card bg-transparent border-light mb-3">
+                        <div class="card-body text-white">
+                            <h5 class="card-title"><i class="fas fa-users-cog me-2"></i>Segmentación por edad</h5>
+                            <p class="card-text">Desarrollar estrategias digitales específicas por grupos etarios, con especial énfasis en los segmentos de mayor edad donde existe mayor oportunidad de crecimiento</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-transparent border-light mb-3">
+                        <div class="card-body text-white">
+                            <h5 class="card-title"><i class="fas fa-money-bill-wave me-2"></i>Enfoque secundario en renta</h5>
+                            <p class="card-text">Considerar el nivel de renta como factor secundario, especialmente para estrategias dirigidas a segmentos de edad intermedia</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-transparent border-light mb-3">
+                        <div class="card-body text-white">
+                            <h5 class="card-title"><i class="fas fa-user-graduate me-2"></i>Programas específicos para seniors</h5>
+                            <p class="card-text">Crear iniciativas educativas y de acompañamiento para aumentar la adopción digital entre clientes mayores</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-transparent border-light mb-3">
+                        <div class="card-body text-white">
+                            <h5 class="card-title"><i class="fas fa-chart-pie me-2"></i>Optimización de recursos</h5>
+                            <p class="card-text">Dirigir esfuerzos de marketing digital principalmente a segmentos con mayor probabilidad de respuesta</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="mt-4"><i class="fas fa-rocket me-2"></i>Impacto Potencial</h3>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-transparent border-light h-100">
+                        <div class="card-body text-white text-center">
+                            <i class="fas fa-chart-line fa-3x mb-3"></i>
+                            <h5 class="card-title">Aumento en adopción digital</h5>
+                            <p class="card-text">Mayor uso de servicios bancarios online</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-transparent border-light h-100">
+                        <div class="card-body text-white text-center">
+                            <i class="fas fa-hand-holding-usd fa-3x mb-3"></i>
+                            <h5 class="card-title">Reducción de costos</h5>
+                            <p class="card-text">Menor dependencia de canales tradicionales</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-transparent border-light h-100">
+                        <div class="card-body text-white text-center">
+                            <i class="fas fa-trophy fa-3x mb-3"></i>
+                            <h5 class="card-title">Ventaja competitiva</h5>
+                            <p class="card-text">Mejor posicionamiento en el mercado digital</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Apéndice: Métricas Detalladas -->
+        <section class="section-card" data-aos="fade-up">
+            <h2 class="mb-4"><i class="fas fa-clipboard-list me-2"></i>Apéndice: Métricas Detalladas del Modelo Final</h2>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="mt-3"><i class="fas fa-chart-bar me-2"></i>Métricas Generales</h3>
+                    <table class="table table-hover table-custom">
+                        <thead>
+                            <tr>
+                                <th>Métrica</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Accuracy</td>
+                                <td>0.7423</td>
+                            </tr>
+                            <tr>
+                                <td>Precision</td>
+                                <td>0.7594</td>
+                            </tr>
+                            <tr>
+                                <td>Recall</td>
+                                <td>0.9125</td>
+                            </tr>
+                            <tr>
+                                <td>F1-score</td>
+                                <td>0.8289</td>
+                            </tr>
+                            <tr>
+                                <td>AUC-ROC</td>
+                                <td>0.7400</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="mt-3"><i class="fas fa-th me-2"></i>Matriz de Confusión</h3>
+                    <div class="img-container" data-aos="zoom-in">
+                        <img src="confusion_matrix_Modelo_con_Dropout.png" alt="Matriz de Confusión" class="img-fluid">
+                        <div class="img-caption">Matriz de confusión del modelo final</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="mt-4"><i class="fas fa-chart-area me-2"></i>Curva ROC</h3>
+            <div class="img-container" data-aos="zoom-in">
+                <img src="roc_curve_Modelo_con_Dropout.png" alt="Curva ROC" class="img-fluid">
+                <div class="img-caption">Curva ROC del modelo final</div>
+            </div>
+            
+            <h3 class="mt-4"><i class="fas fa-history me-2"></i>Evolución del Entrenamiento</h3>
+            <div class="img-container" data-aos="zoom-in">
+                <img src="training_evolution_Modelo_con_Dropout.png" alt="Evolución del entrenamiento" class="img-fluid">
+                <div class="img-caption">Evolución de la pérdida y precisión durante el entrenamiento</div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-section mt-5">
+        <div class="container text-center">
+            <img src="https://www.duoc.cl/wp-content/themes/wordpress-duoc-cl/images/logo-duoc.svg" alt="Logo Duoc UC" class="img-fluid mb-3" style="max-width: 150px;">
+            <p>Proyecto de Deep Learning - Duoc UC</p>
+            <p>Patricio Quintanilla, Italo Brignardello, Alexander Seydewitz</p>
+            <p>Versión 1.0 - 2025</p>
+            <div class="mt-3">
+                <a href="https://github.com/TioPig" class="btn btn-outline-light btn-sm me-2"><i class="fab fa-github me-1"></i> GitHub</a>
+                <a href="Análisis de Predicción de Clientes Internautas.pdf" class="btn btn-outline-light btn-sm"><i class="fas fa-file-pdf me-1"></i> PDF</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS (Animate On Scroll) JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <script>
+        // Inicializar AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        
+        // Activar tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+        
+        // Animación para elementos con clase fade-in
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            });
+            
+            fadeElements.forEach(element => {
+                observer.observe(element);
+            });
+        });
+    
+        // Script para hacer que las imágenes sean clickeables y se abran en el modal
+document.addEventListener('DOMContentLoaded', function() {
+    // Seleccionar todas las imágenes dentro de contenedores .img-container
+    const images = document.querySelectorAll('.img-container img');
+    
+    // Para cada imagen, agregar un event listener para el clic
+    images.forEach(img => {
+        img.addEventListener('click', function() {
+            // Obtener la URL de la imagen
+            const imgSrc = this.getAttribute('src');
+            
+            // Obtener el caption de la imagen (si existe)
+            let caption = '';
+            const captionEl = this.parentElement.querySelector('.img-caption');
+            if (captionEl) {
+                caption = captionEl.textContent;
+            }
+            
+            // Establecer la imagen y el caption en el modal
+            document.getElementById('modalImage').setAttribute('src', imgSrc);
+            document.getElementById('modalCaption').textContent = caption;
+            document.getElementById('imageModalLabel').textContent = caption;
+            
+            // Mostrar el modal
+            const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+            imageModal.show();
+        });
+    });
+});
+
+    </script>
+    <!-- Modal para mostrar imágenes ampliadas -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-white" id="imageModalLabel">Imagen Ampliada</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="" class="modal-img" id="modalImage">
+                <div class="mt-3 text-white" id="modalCaption"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
